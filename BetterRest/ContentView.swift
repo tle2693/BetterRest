@@ -9,37 +9,50 @@
 import SwiftUI
 
 struct ContentView: View {
+    static var defaultWakeTime : Date {
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
+    }
+    
     @State private var sleepAmount = 0.0
     @State private var coffeeAmount = 1
-    @State private var wakeUp = Date()
+    @State private var wakeUp = defaultWakeTime
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 10){
-                Text("When do you want to wake up?")
-                    .font(.headline)
-                
-                DatePicker("Wake up time",selection:  $wakeUp, displayedComponents: .hourAndMinute)
-                .labelsHidden()
-                
-                Text("How much sleep do you want?")
-                Stepper(value: $sleepAmount, in: 4...9, step: 0.25) {
-                    Text("\(sleepAmount, specifier: "%.2f") hours")
+            Form{
+                VStack {
+                    Text("When do you want to wake up?")
+                        .font(.headline)
+                    
+                    DatePicker("Wake up time",selection:  $wakeUp, displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                        .datePickerStyle(WheelDatePickerStyle())
                 }
                 
-                Text("How much coffee do you drink per day?")
-                Stepper(value: $coffeeAmount, in: 1...10) {
-                    if coffeeAmount > 1 {
-                        Text("\(coffeeAmount) cups")
-                    } else {
-                        Text("1 cup")
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("How much sleep do you want?")
+                    Stepper(value: $sleepAmount, in: 4...9, step: 0.25) {
+                        Text("\(sleepAmount, specifier: "%.2f") hours")
                     }
                 }
                 
-                Spacer()
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("How much coffee do you drink per day?")
+                    Stepper(value: $coffeeAmount, in: 1...10) {
+                        if coffeeAmount > 1 {
+                            Text("\(coffeeAmount) cups")
+                        } else {
+                            Text("1 cup")
+                        }
+                    }
+                }
+                
             }
             .navigationBarTitle("Better Rest")
             .navigationBarItems(trailing:
